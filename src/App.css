@@ -11,6 +11,12 @@
   justify-content: center;
 }
 
+.watchlist-button {
+  cursor: pointer;
+  width: fit-content;
+  align-self: center;
+}
+
 .movies-card-holder {
   display: flex;
   flex-direction: row;
@@ -25,7 +31,7 @@
   border-radius: 0.5rem;
   justify-items: center;
   width: 25rem;
-  height: fit-content;
+  height: 30rem;
   box-shadow: 0.1rem 0.1rem 0.5rem 0.25rem;
 }
 
