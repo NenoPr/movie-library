@@ -85,7 +85,7 @@ function Watchlist({ watchlist, setWatchlist }) {
                     {movie.watched ? "Completed" : "Not watched"}
                   </button>
                 </div>
-                <div>change your rating:</div>
+                <div>Change your rating:</div>
                 <p>Your Rating:</p>
                 <select
                   name="rating"

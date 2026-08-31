@@ -5,24 +5,45 @@ import "./App.css";
 function App() {
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
-  const [watchlist, setWatchlist] = useState([]);
   const [toggleWatchlist, setToggleWatchlist] = useState(false);
   const [toggletime, setToggleTime] = useState("all-years");
+  const [watchlist, setWatchlist] = useState(() => {
+    const saved = localStorage.getItem("watchlist");
+
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [status, setStatus] = useState("Nothing here yet...");
 
   const handleSearch = async () => {
-    const url = `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(query)}`;
+    setStatus("Loading...");
+    setMovies([]);
+    try {
+      const url = `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(query)}`;
 
-    const response = await fetch(url, {
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_TMDB_TOKEN}`,
-      },
-    });
+      const response = await fetch(url, {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_TMDB_TOKEN}`,
+        },
+      });
 
-    const data = await response.json();
-    console.log(data.results);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
 
-    setMovies(data.results);
+      const data = await response.json();
+
+      if (response.length < 1) setStatus("No movies found by that name...");
+
+      console.log(data.results);
+      setMovies(data.results);
+    } catch (error) {
+      console.log(error);
+      setStatus(error);
+    }
+
+    setStatus("Nothing here yet...");
   };
 
   const handleKeyDown = (event) => {
@@ -33,7 +54,7 @@ function App() {
   };
 
   useEffect(() => {
-    console.log(watchlist);
+    localStorage.setItem("watchlist", JSON.stringify(watchlist));
   }, [watchlist]);
 
   const addToWatchlist = (movie) => {
@@ -97,56 +118,79 @@ function App() {
         <>
           <div className="age-range-container">
             <button
-              className="all-years"
+              className={`all-years ${toggletime === "all-years" ? "search-filter-tab-selected" : ""}`}
               onClick={() => setToggleTime("all-years")}
             >
               All Years
             </button>
-            <button className="2020+" onClick={() => setToggleTime("2020+")}>
+            <button
+              className={`2020+ ${toggletime === "2020+" ? "search-filter-tab-selected" : ""}`}
+              onClick={() => setToggleTime("2020+")}
+            >
               2020+
             </button>
-            <button className="2010+" onClick={() => setToggleTime("2010+")}>
+            <button
+              className={`2010+ ${toggletime === "2010+" ? "search-filter-tab-selected" : ""}`}
+              onClick={() => setToggleTime("2010+")}
+            >
               2010+
             </button>
-            <button className="2000+" onClick={() => setToggleTime("2000+")}>
+            <button
+              className={`2000+ ${toggletime === "2000+" ? "search-filter-tab-selected" : ""}`}
+              onClick={() => setToggleTime("2000+")}
+            >
               2000+
             </button>
             <button
-              className="before-2000"
+              className={`before-2000 ${toggletime === "before-2000" ? "search-filter-tab-selected" : ""}`}
               onClick={() => setToggleTime("before-2000")}
             >
               Before 2000
             </button>
           </div>
           <div className="movies-card-holder">
-            {filteredTime.map((movie) => (
-              <div key={movie.id} className="movie-card">
-                <div className="movie-poster">
-                  <img
-                    className="poster-image"
-                    src={
-                      movie.poster_path
-                        ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}`
-                        : "/no_poster.png"
-                    }
-                    alt={movie.title}
-                  />
+            {movies.length > 0 ? (
+              filteredTime.map((movie) => (
+                <div key={movie.id} className="movie-card">
+                  <div className="movie-poster">
+                    <img
+                      className="poster-image"
+                      src={
+                        movie.poster_path
+                          ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}`
+                          : "/no_poster.png"
+                      }
+                      alt={movie.title}
+                    />
+                  </div>
+                  <div className="movie-details">
+                    <h2>{movie.title}</h2>
+                    <p>
+                      <strong>Release Date:</strong> {movie.release_date}
+                    </p>
+                    <p>
+                      <strong>Rating:</strong> {movie.vote_average}
+                    </p>
+                    <p>
+                      <strong>Summary: </strong>
+                      {movie.overview}
+                    </p>
+                    {watchlist.some((item) => item.id === movie.id) ? (
+                      <button disabled>Added</button>
+                    ) : (
+                      <button
+                        className="add-button"
+                        onClick={() => addToWatchlist(movie)}
+                      >
+                        Add to Watchlist
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <div className="movie-details">
-                  <h2>{movie.title}</h2>
-                  <p>Release Date: {movie.release_date}</p>
-                  <p>Rating: {movie.vote_average}</p>
-                  <p>{movie.overview}</p>
-                  {watchlist.some((item) => item.id === movie.id) ? (
-                    <button disabled>Added</button>
-                  ) : (
-                    <button onClick={() => addToWatchlist(movie)}>
-                      Add to Watchlist
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p>{status}</p>
+            )}
           </div>
         </>
       )}
