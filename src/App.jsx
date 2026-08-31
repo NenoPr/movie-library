@@ -34,7 +34,8 @@ function App() {
 
       const data = await response.json();
 
-      if (response.length < 1) setStatus("No movies found by that name...");
+      if (data.results < 1)
+        setStatus(`No movies found by the name of ${query}`);
 
       console.log(data.results);
       setMovies(data.results);
@@ -42,8 +43,7 @@ function App() {
       console.log(error);
       setStatus(error);
     }
-
-    setStatus("Nothing here yet...");
+    if (query === "") setStatus("Nothing here yet...");
   };
 
   const handleKeyDown = (event) => {
