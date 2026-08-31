@@ -51,6 +51,35 @@
   text-align: left;
 }
 
+.age-range-container {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.watched-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.watchlist-tab {
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.watchlist-tab-selected {
+  background-color: rgb(0, 0, 0);
+  color: white;
+}
+
+button {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
 .counter {
   font-size: 16px;
   padding: 5px 10px;
