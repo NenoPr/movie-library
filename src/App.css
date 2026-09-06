@@ -94,3 +94,22 @@ button {
   border-radius: 0.5rem;
   cursor: pointer;
 }
+
+.watchlist-stats {
+  display: flex;
+  gap: 1rem;
+  align-self: center;
+}
+
+.progress-bar-container {
+  width: 30%;
+  border: 0.1rem solid white;
+  border-radius: 1rem;
+  align-self: center;
+}
+
+.progress-bar {
+  background-color: rgb(255, 0, 0);
+  height: 100%;
+  border-radius: 1rem;
+}

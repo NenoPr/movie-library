@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import "../App.css";
+import MovieCard from "./MovieCard.jsx";
 
 function Watchlist({ watchlist, setWatchlist }) {
   const [currentTab, setCurrentTab] = useState("all");
+
   useEffect(() => {
     console.log(watchlist);
   }, []);
@@ -36,8 +38,35 @@ function Watchlist({ watchlist, setWatchlist }) {
 
     return true;
   });
+
+  const watchedFilms = watchlist.filter((movie) => {
+    if (movie.watched === true) return movie;
+  });
+  const unwatchedFilms = watchlist.filter((movie) => {
+    if (movie.watched === false) return movie;
+  });
+  const completionPercentage =
+    watchlist.length > 0
+      ? Math.round((watchedFilms.length / watchlist.length) * 100)
+      : 0;
   return (
     <>
+      <div className="watchlist-stats">
+        <div>{watchlist.length} movies total</div>
+        <div>{watchedFilms.length} watched</div>
+        <div>{unwatchedFilms.length} unwatched</div>
+        <div>{completionPercentage}% complete</div>
+      </div>
+      <div className="progress-bar-container">
+        <div
+          style={{
+            width: `${completionPercentage}%`,
+          }}
+          className="progress-bar"
+        >
+          {watchedFilms.length}/{watchlist.length}
+        </div>
+      </div>
       <div className="watched-tabs">
         <button
           className={`all-watchlist watchlist-tab ${currentTab === "all" ? "watchlist-tab-selected" : ""}`}
@@ -59,62 +88,15 @@ function Watchlist({ watchlist, setWatchlist }) {
         </button>
       </div>
       <div className="movies-card-holder">
-        {filteredWatchlist.map((movie) => {
-          return (
-            <div key={movie.id} className="movie-card">
-              <div className="movie-poster">
-                <img
-                  className="poster-image"
-                  src={
-                    movie.poster_path
-                      ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}`
-                      : "/no_poster.png"
-                  }
-                  alt={movie.title}
-                />
-              </div>
-              <div className="movie-details">
-                <h2>{movie.title}</h2>
-                <p>Release Date: {movie.release_date}</p>
-                <div>
-                  <p>
-                    Click to set show as{" "}
-                    {movie.watched ? "not watched:" : "as watched:"}
-                  </p>
-                  <button onClick={() => updateWatchlistWatched(movie.id)}>
-                    {movie.watched ? "Completed" : "Not watched"}
-                  </button>
-                </div>
-                <div>Change your rating:</div>
-                <p>Your Rating:</p>
-                <select
-                  name="rating"
-                  id="rating"
-                  value={movie.user_rating}
-                  onChange={(event) =>
-                    updateWatchlistRating(movie.id, event.target.value)
-                  }
-                >
-                  <option value="0">Not rated</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                  <option value="10">10</option>
-                </select>
-                <p></p>
-                <button onClick={() => removeWatchlist(movie.id)}>
-                  Remove from watchlist
-                </button>
-              </div>
-            </div>
-          );
-        })}
+        {filteredWatchlist.map((movie) => (
+          <MovieCard
+            key={movie.id}
+            movie={movie}
+            onToggleWatched={updateWatchlistWatched}
+            onRatingChange={updateWatchlistRating}
+            onRemove={removeWatchlist}
+          ></MovieCard>
+        ))}
       </div>
     </>
   );
