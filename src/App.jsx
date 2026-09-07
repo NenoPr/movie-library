@@ -95,16 +95,20 @@ function App() {
 
   return (
     <div className="main">
-      <div className="search-holder">
-        <input
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Search movies..."
-        />
+      {toggleWatchlist ? (
+        ""
+      ) : (
+        <div className="search-holder">
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Search movies..."
+          />
 
-        <button onClick={handleSearch}>Search</button>
-      </div>
+          <button onClick={handleSearch}>Search</button>
+        </div>
+      )}
       <button
         className="watchlist-button"
         onClick={() => setToggleWatchlist(!toggleWatchlist)}

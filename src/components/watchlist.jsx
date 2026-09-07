@@ -4,6 +4,7 @@ import MovieCard from "./MovieCard.jsx";
 
 function Watchlist({ watchlist, setWatchlist }) {
   const [currentTab, setCurrentTab] = useState("all");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     console.log(watchlist);
@@ -27,24 +28,53 @@ function Watchlist({ watchlist, setWatchlist }) {
       ),
     );
   };
-  const filteredWatchlist = watchlist.filter((movie) => {
-    if (currentTab === "watched") {
-      return movie.watched === true;
-    }
-
-    if (currentTab === "not-watched") {
-      return movie.watched === false;
-    }
-
-    return true;
-  });
-
   const watchedFilms = watchlist.filter((movie) => {
     if (movie.watched === true) return movie;
   });
   const unwatchedFilms = watchlist.filter((movie) => {
     if (movie.watched === false) return movie;
   });
+  // const filteredWatchlist = watchlist.filter((movie) => {
+  //   if (search !== "") {
+  //     if (currentTab === "watched") {
+  //       if (movie.watched === true) {
+  //         return movie.title.toLowerCase().includes(search.toLowerCase());
+  //       }
+  //     }
+
+  //     if (currentTab === "not-watched") {
+  //       if (movie.watched === false)
+  //         return movie.title.toLowerCase().includes(search.toLowerCase());
+  //     }
+
+  //     if (currentTab === "all") {
+  //       return movie.title.toLowerCase().includes(search.toLowerCase());
+  //     }
+  //   }
+  //   if (currentTab === "watched") {
+  //     return movie.watched === true;
+  //   }
+
+  //   if (currentTab === "not-watched") {
+  //     return movie.watched === false;
+  //   }
+
+  //   return true;
+  // });
+
+  const filteredWatchlist = watchlist.filter((movie) => {
+    const matchesSearch = movie.title
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const matchesTab =
+      currentTab === "all" ||
+      (currentTab === "watched" && movie.watched) ||
+      (currentTab === "not-watched" && !movie.watched);
+
+    return matchesSearch && matchesTab;
+  });
+
   const completionPercentage =
     watchlist.length > 0
       ? Math.round((watchedFilms.length / watchlist.length) * 100)
@@ -66,6 +96,10 @@ function Watchlist({ watchlist, setWatchlist }) {
         >
           {watchedFilms.length}/{watchlist.length}
         </div>
+      </div>
+      <div className="search-watchlist-container">
+        <div>Search Watchlist</div>
+        <input type="text" onChange={(e) => setSearch(e.target.value)} />
       </div>
       <div className="watched-tabs">
         <button
